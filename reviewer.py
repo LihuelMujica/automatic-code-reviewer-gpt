@@ -2,6 +2,9 @@ import openai
 from dotenv import load_dotenv
 import os
 import argparse
+from rich.console import Console
+from rich.markdown import Markdown
+import sys
 
 PROMPT_ENG = """"
 You will recieve a file's contents as text.
@@ -10,14 +13,15 @@ Generate a code review for the file. Indicate what changes shoul be made to impr
 
 PROMPT_ESP = """"
 Recibirás el contenido de un archivo como texto.
-Genera una review de código para el archivo. Indica qué cambios se deben hacer para mejorar su estilo, rendimiento, legibilidad y mantenibilidad. Si hay alguna biblioteca de renombre que se pueda introducir para mejorar el código, sugiérala. Sé amable y constructivo. Para cada cambio sugerido, incluye los números de línea a los que te refieres. Al final muestra el código refactorizado
+Genera una review de código para el archivo. Indica qué cambios se deben hacer para mejorar su estilo, rendimiento, legibilidad y mantenibilidad. Si hay alguna biblioteca de renombre que se pueda introducir para mejorar el código, sugiérala. Sé amable y constructivo. Para cada cambio sugerido, incluye los números de línea a los que te refieres. Al final muestra el código refactorizado.
+Tu respuesta debe estar en markdown. No te olvides de poner el lenguaje de programación al usar bloques de código.
 """
 
 def codeReview(filePath, model):
     with open(filePath) as file:
         filecontent = file.read()
     review = codeReviewRequest(filecontent, model)
-    print(review)
+    console.print(Markdown(review))
 
 def codeReviewRequest(filecontent, model):
     messages = [
@@ -42,8 +46,7 @@ def main():
     codeReview(args.file, args.model)
 
 if __name__ == "__main__":
-
-
     load_dotenv()
     openai.api_key = os.getenv("OPENAI_API_KEY")
+    console = Console()
     main()
